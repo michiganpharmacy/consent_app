@@ -64,54 +64,7 @@ Future<List<Item>> loadAndProcessConsentDocument() async {
 // main()
 //
 ////////////////////////////////////
-Future<void> main() async {
-  // // This next line is required, otherwise nothing appears:
-  // WidgetsFlutterBinding.ensureInitialized();
-  // // Asynchronously load the consent document
-  // // and parse it into sections:
-  // List<Item> consentData = await loadAndProcessConsentDocument();
-  // // Load globals:
-  // // globals = await loadConfigFile();
-  //
-  //
-  // // DEBUG:
-  // // print(globals['consent_url']);
-  // // print(globals['decline_url']);
-  //
-  // // DEBUG: print sections:
-  // //for(int i=0;i<consentData.length;i++){
-  // //  print('\n===== SECTION ${consentData[i].index} =====');
-  // //  print('TITLE   : ${consentData[i].title}'    );
-  // //  print('SUMMARY : ${consentData[i].summary}'  );
-  // //  print('DETAIL  : ${consentData[i].detail}'   );
-  // //  print('ICONNAME: ${consentData[i].iconName}' );
-  // //}
-  //
-  // // All document sections (i.e., Flutter route pages) are
-  // // created in advance:
-  // List<DocSection> allSections = List<DocSection>(consentData.length);
-  // totalSections = allSections.length;
-  // for (int i = 0; i < consentData.length; i++) {
-  //   allSections[i] = DocSection(data: consentData[i]);
-  // }
-  //
-  // // Add a reference to the "next" section to each section,
-  // // (except for the very last section):
-  // for (int i = 0; i < allSections.length - 1; i++) {
-  //   allSections[i].setNext(allSections[i + 1]);
-  // }
-  // // Finally, we *MUST* specify a subsequent route after we
-  // // are all done with the document sections
-  // // (Router builders should never return null).
-  // //
-  // // NOTA BENE: In this "template app", we will simply cycle
-  // // back to the home page. However, in any real app that
-  // // you derive from this template, be sure to point to a
-  // // consent agreement page or to another route representing
-  // // the beginning of the main functional part of your app:
-  // //
-  // allSections[allSections.length - 1].setNext(allSections[0]);
-
+main() {
   // Now we are good to run the app:
   runApp(MyApp());
 }
@@ -209,11 +162,9 @@ class _MyAppState extends State<MyApp> {
         title: 'Dorsch Lab Consent App',
         home: Center(
           child: Container(
-            color: Colors.redAccent,
             width: 50,
             height: 50,
-            child: CircularProgressIndicator(
-            ),
+            child: Icon(Icons.access_time, size: 40.0),
           ),
         ),
         theme: primaryThemeData,
@@ -285,13 +236,19 @@ class _DocSectionState extends State<DocSection> {
     // widget used to display the summary text
     //
     //////////////////////////////////////////////////
-    Widget summaryText = RichText(
-      textAlign: TextAlign.justify,
-      text: TextSpan(children: <TextSpan>[
-        // Initial Capital is a little larger than the body of the text:
-        TextSpan(text: '${widget.data.summary.substring(0, 1)}', style: Theme.of(context).textTheme.headline6),
-        TextSpan(text: '${widget.data.summary.substring(1)}', style: Theme.of(context).textTheme.subtitle1),
-      ]),
+    // Widget summaryText = RichText(
+    //   textAlign: TextAlign.justify,
+    //   text: TextSpan(children: <TextSpan>[
+    //     // Initial Capital is a little larger than the body of the text:
+    //     TextSpan(text: '${widget.data.summary.substring(0, 1)}', style: Theme.of(context).textTheme.headline6),
+    //     TextSpan(text: '${widget.data.summary.substring(1)}', style: Theme.of(context).textTheme.subtitle1),
+    //   ]),
+    // );
+
+    Widget summaryText = Container(
+      child: MarkdownBody(data: widget.data.summary,
+        styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(textScaleFactor: 1.1),
+      ),
     );
 
     /////////////////////////////////////////////////////

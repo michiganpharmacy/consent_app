@@ -74,7 +74,8 @@ List<Item> processDocument(document){
          processingDetail = false;
          //accumulator.reset();
          accumulator.summary  = kvMatch.group(2);
-      
+
+
       }else if(detailPattern.hasMatch(line)){
       //}else if(kvMatch.group(1)=='detail'){
          processingDetail = true;
@@ -94,7 +95,8 @@ List<Item> processDocument(document){
          accumulator.title    = kvMatch.group(1);
          accumulator.summary  = kvMatch.group(2);
          accumulator.index    = sections.length+1;
-      }                    
+      }
+
     }else{
       // We get here if line does not match sgPattern or kvPattern.
       // In general, these are CONTINUATION LINES. We append these
@@ -139,23 +141,29 @@ List<Item> processDocument(document){
         //
       }else{
         // Get here if we are processing summary lines:
-        // add a space if needed before appending line:
+        // add a new line if needed before appending line:
         if( accumulator.summary.isNotEmpty 
             && ! accumulator.summary.endsWith(' ')
             && line.isNotEmpty
             && line[0] != ' '
         ){
-            accumulator.summary += ' ';
-        } 
+            accumulator.summary += "\\\n\\\n";
+        }
         accumulator.summary += line;
       }
     }
   }
+
+
+
+
   // Push the very last accumulated 
   // entry into sections list:
   if(accumulator.title != '' ){
      sections.add(accumulator.clone());
   }
+
+
 
   // DEBUG: print sections:
   //for(int i=0;i<sections.length;i++){
