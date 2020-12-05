@@ -1,4 +1,9 @@
-import 'package:consent_app/theme_settings.dart';
+import 'dart:async' show Future;
+import 'dart:convert' show jsonDecode;
+
+import 'package:consent_app/globals.dart' as globals;
+import 'package:consent_app/style.dart';
+import 'package:flutter/material.dart';
 //////////////////////////////////////////////////////////////////////////
 //
 // consent app
@@ -12,17 +17,13 @@ import 'package:consent_app/theme_settings.dart';
 // First release: 2020.11.18.ET
 //
 //////////////////////////////////////////////////////////////////////////
-
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // provides markdown support
 import 'package:url_launcher/url_launcher.dart';
+
+import 'iconMap.dart'; // Static class with icon lookup by string label
 import 'item.dart'; // Item class definition
 import 'process_document.dart'; // Function to process the Markdown document
-import 'iconMap.dart'; // Static class with icon lookup by string label
-
-import 'dart:async' show Future;
-import 'dart:convert' show jsonDecode;
 
 ///////////////////////////////////////////
 //
@@ -34,12 +35,14 @@ Future<Map> loadConfigFile() async {
   return jsonDecode(configuration);
 }
 
+int totalSections = 0;
+
 ///////////////////////////////////////////////////////
 //
 // A place to store global configuration information:
 //
 ///////////////////////////////////////////////////////
-Map globals;
+// Map globals;
 
 //////////////////////////////////////////
 //
@@ -62,52 +65,55 @@ Future<List<Item>> loadAndProcessConsentDocument() async {
 //
 ////////////////////////////////////
 Future<void> main() async {
-  // This next line is required, otherwise nothing appears:
-  WidgetsFlutterBinding.ensureInitialized();
-  // Asynchronously load the consent document
-  // and parse it into sections:
-  List<Item> consentData = await loadAndProcessConsentDocument();
-  // Load globals:
-  globals = await loadConfigFile();
-  // DEBUG:
-  print(globals['consent_url']);
-  print(globals['decline_url']);
-
-  // DEBUG: print sections:
-  //for(int i=0;i<consentData.length;i++){
-  //  print('\n===== SECTION ${consentData[i].index} =====');
-  //  print('TITLE   : ${consentData[i].title}'    );
-  //  print('SUMMARY : ${consentData[i].summary}'  );
-  //  print('DETAIL  : ${consentData[i].detail}'   );
-  //  print('ICONNAME: ${consentData[i].iconName}' );
-  //}
-
-  // All document sections (i.e., Flutter route pages) are
-  // created in advance:
-  List<DocSection> allSections = List<DocSection>(consentData.length);
-  for (int i = 0; i < consentData.length; i++) {
-    allSections[i] = DocSection(data: consentData[i]);
-  }
-
-  // Add a reference to the "next" section to each section,
-  // (except for the very last section):
-  for (int i = 0; i < allSections.length - 1; i++) {
-    allSections[i].setNext(allSections[i + 1]);
-  }
-  // Finally, we *MUST* specify a subsequent route after we
-  // are all done with the document sections
-  // (Router builders should never return null).
+  // // This next line is required, otherwise nothing appears:
+  // WidgetsFlutterBinding.ensureInitialized();
+  // // Asynchronously load the consent document
+  // // and parse it into sections:
+  // List<Item> consentData = await loadAndProcessConsentDocument();
+  // // Load globals:
+  // // globals = await loadConfigFile();
   //
-  // NOTA BENE: In this "template app", we will simply cycle
-  // back to the home page. However, in any real app that
-  // you derive from this template, be sure to point to a
-  // consent agreement page or to another route representing
-  // the beginning of the main functional part of your app:
   //
-  allSections[allSections.length - 1].setNext(allSections[0]);
+  // // DEBUG:
+  // // print(globals['consent_url']);
+  // // print(globals['decline_url']);
+  //
+  // // DEBUG: print sections:
+  // //for(int i=0;i<consentData.length;i++){
+  // //  print('\n===== SECTION ${consentData[i].index} =====');
+  // //  print('TITLE   : ${consentData[i].title}'    );
+  // //  print('SUMMARY : ${consentData[i].summary}'  );
+  // //  print('DETAIL  : ${consentData[i].detail}'   );
+  // //  print('ICONNAME: ${consentData[i].iconName}' );
+  // //}
+  //
+  // // All document sections (i.e., Flutter route pages) are
+  // // created in advance:
+  // List<DocSection> allSections = List<DocSection>(consentData.length);
+  // totalSections = allSections.length;
+  // for (int i = 0; i < consentData.length; i++) {
+  //   allSections[i] = DocSection(data: consentData[i]);
+  // }
+  //
+  // // Add a reference to the "next" section to each section,
+  // // (except for the very last section):
+  // for (int i = 0; i < allSections.length - 1; i++) {
+  //   allSections[i].setNext(allSections[i + 1]);
+  // }
+  // // Finally, we *MUST* specify a subsequent route after we
+  // // are all done with the document sections
+  // // (Router builders should never return null).
+  // //
+  // // NOTA BENE: In this "template app", we will simply cycle
+  // // back to the home page. However, in any real app that
+  // // you derive from this template, be sure to point to a
+  // // consent agreement page or to another route representing
+  // // the beginning of the main functional part of your app:
+  // //
+  // allSections[allSections.length - 1].setNext(allSections[0]);
 
   // Now we are good to run the app:
-  runApp(MyApp(allSections));
+  runApp(MyApp());
 }
 
 ////////////////////////////////////////
@@ -115,37 +121,104 @@ Future<void> main() async {
 // MyApp
 //
 ////////////////////////////////////////
-class MyApp extends StatelessWidget {
-  //final List<Item> data;
-  final List<DocSection> data;
+class MyApp extends StatefulWidget {
+  // //final List<Item> data;
+  // final List<DocSection> data;
+  //
+  // // Constructor
+  // MyApp(this.data);
 
-  // Constructor
-  MyApp(this.data);
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
+  List data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  loadData() async {
+    // This next line is required, otherwise nothing appears:
+    WidgetsFlutterBinding.ensureInitialized();
+    // Asynchronously load the consent document
+    // and parse it into sections:
+    List<Item> consentData = await loadAndProcessConsentDocument();
+
+    if (consentData.length > 0) {
+      // Load globals:
+      // globals = await loadConfigFile();
+
+      // DEBUG:
+      print(globals.consent_url);
+      print(globals.decline_url);
+
+      // DEBUG: print sections:
+      for (int i = 0; i < consentData.length; i++) {
+        print('\n===== SECTION ${consentData[i].index} =====');
+        print('TITLE   : ${consentData[i].title}');
+        print('SUMMARY : ${consentData[i].summary}');
+        print('DETAIL  : ${consentData[i].detail}');
+        print('ICONNAME: ${consentData[i].iconName}');
+      }
+
+      // All document sections (i.e., Flutter route pages) are
+      // created in advance:
+      List<DocSection> allSections = List<DocSection>(consentData.length);
+      totalSections = allSections.length;
+      for (int i = 0; i < consentData.length; i++) {
+        allSections[i] = DocSection(data: consentData[i]);
+      }
+
+      // Add a reference to the "next" section to each section,
+      // (except for the very last section):
+      for (int i = 0; i < allSections.length - 1; i++) {
+        allSections[i].setNext(allSections[i + 1]);
+      }
+      // Finally, we *MUST* specify a subsequent route after we
+      // are all done with the document sections
+      // (Router builders should never return null).
+      //
+      // NOTA BENE: In this "template app", we will simply cycle
+      // back to the home page. However, in any real app that
+      // you derive from this template, be sure to point to a
+      // consent agreement page or to another route representing
+      // the beginning of the main functional part of your app:
+      //
+      allSections[allSections.length - 1].setNext(allSections[0]);
+
+      setState(() {
+        this.data = allSections;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dorsch Lab Consent App',
-      home: this.data[0],
-      theme: ThemeData(
-        // Define the default brightness and colors.
-        // brightness: Brightness.dark,
-        primaryColor: primaryColor,
-        // accentColor: Colors.cyan[600],
-
-        // Define the default font family.
-        fontFamily: 'Georgia',
-
-        // Define the default TextTheme. Use this to specify the default
-        // text styling for headlines, titles, bodies of text, and more.
-        textTheme: TextTheme(
-          headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-          bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+    if (this.data.length > 0) {
+      return MaterialApp(
+        title: 'Dorsch Lab Consent App',
+        home: this.data[0],
+        theme: primaryThemeData,
+      );
+    } else {
+      return MaterialApp(
+        title: 'Dorsch Lab Consent App',
+        home: Center(
+          child: Container(
+            color: Colors.redAccent,
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+            ),
+          ),
         ),
-      ),
-    );
+        theme: primaryThemeData,
+      );
+    }
   }
 }
 
@@ -247,14 +320,11 @@ class _DocSectionState extends State<DocSection> {
     ////////////////////////////////////////////////////////////////
     Widget formattedDocumentSection() {
       if (widget.data.detail.isEmpty) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(52.0, 10.0, 52.0, 10.0),
-          child: summaryText,
-        );
+        return summaryText;
       } else {
         return ExpansionTile(
           title: Padding(
-            padding: EdgeInsets.fromLTRB(35.0, 10.0, 0.0, 10.0),
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 10.0, 50.0),
             child: summaryText,
           ),
           children: <Widget>[detailTextWidget],
@@ -264,7 +334,7 @@ class _DocSectionState extends State<DocSection> {
     }
 
     // The reference to the materialized widget is stored here:
-    Widget formattedSection = formattedDocumentSection();
+    // Widget formattedSection = formattedDocumentSection();
 
     /////////////////////////////////////////////////////////
     //
@@ -276,7 +346,12 @@ class _DocSectionState extends State<DocSection> {
     Widget setBackButton() {
       if (Navigator.canPop(context)) {
         return ElevatedButton(
-            child: Text('◄ Back'),
+            child: Row(
+              children: [
+                Icon(Icons.arrow_back_ios),
+                Text('Back'),
+              ],
+            ),
             onPressed: () {
               Navigator.pop(context);
             });
@@ -287,7 +362,7 @@ class _DocSectionState extends State<DocSection> {
     }
 
     // ... And here we store a reference to the materialized widget:
-    Widget conditionalBackButton = setBackButton();
+    // Widget conditionalBackButton = setBackButton();
 
     /////////////////////////////
     //
@@ -295,7 +370,7 @@ class _DocSectionState extends State<DocSection> {
     //
     /////////////////////////////
     userConsents() async {
-      String hasConsentedUrl = globals['consent_url'];
+      String hasConsentedUrl = globals.consent_url;
       if (await canLaunch(hasConsentedUrl)) {
         await launch(hasConsentedUrl);
       } else {
@@ -310,7 +385,7 @@ class _DocSectionState extends State<DocSection> {
     //
     ////////////////////////////////////////
     userDeclines() async {
-      String hasDeclinedUrl = globals['decline_url'];
+      String hasDeclinedUrl = globals.decline_url;
       if (await canLaunch(hasDeclinedUrl)) {
         await launch(hasDeclinedUrl);
       } else {
@@ -323,72 +398,120 @@ class _DocSectionState extends State<DocSection> {
     //
     Widget setNextButton() {
       if (widget.data.title == 'Authorization') {
-        return Column(children: <Widget>[
-          ElevatedButton(
-            child: Text('I agree'),
-            onPressed: userConsents,
-          ),
-          SizedBox(height: 10), // Used as padding
-          ElevatedButton(
-            child: Text('I decline'),
-            onPressed: userDeclines,
-          ),
-        ]);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(children: <Widget>[
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 100.0),
+                child: ElevatedButton(
+                  child: Text('I agree'),
+                  onPressed: userConsents,
+                ),
+              ),
+              SizedBox(height: 20), // Used as padding
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 100.0),
+                child: ElevatedButton(
+                  child: Text('I decline'),
+                  onPressed: userDeclines,
+                ),
+              ),
+            ]),
+          ],
+        );
       } else {
-        return ElevatedButton(
-          child: Text('Next'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              // getNext() returns the next page route:
-              MaterialPageRoute(builder: (context) => widget.getNext()),
-            );
-          },
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 200.0),
+              child: ElevatedButton(
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                      // color: Colors.white,
+                      // backgroundColor: primaryColor,
+
+                      ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    // getNext() returns the next page route:
+                    MaterialPageRoute(builder: (context) => widget.getNext()),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       }
     }
 
     // ... Here we store a reference to the materialized widget:
-    Widget conditionalNextButton = setNextButton();
+    // Widget conditionalNextButton = setNextButton();
+
+    String totalItems = widget.data.runtimeType.toString();
 
     //
     // Now we can easily build out the rest of the layout:
     //
     return MaterialApp(
+      theme: primaryThemeData,
       home: Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text('Consent § ${widget.data.index}'),
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Consent (page ${widget.data.index} of ${totalSections})',
+              style: appBarTextStyle,
+            ),
+          ),
         ),
-        body: ListView(
-          children: <Widget>[
-            // ICON:
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
-              // Icon is chosen based on the section title:
-              child: Icon(IconMap.lookup(widget.data.title), size: 48, color: primaryColor),
+        body: Container(
+          padding: EdgeInsets.only(top: 0.0, bottom: 0.0, left: 25.0, right: 25.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                // ICON:
+                Padding(
+                  padding: EdgeInsets.only(top: 50.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  // Icon is chosen based on the section title:
+                  child: Icon(IconMap.lookup(widget.data.title), size: 48, color: primaryColor),
+                ),
+                // TITLE of the section:
+                Padding(
+                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
+                    child: Text(
+                      widget.data.title,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      maxLines: 5,
+                      style: TextStyle(fontWeight: FontWeight.normal, color: primaryColor),
+                      textScaleFactor: 2.0,
+                    ),
+                  ),
+                ),
+                // EXPANSION SECTION containing the section text elements:
+                Padding(
+                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
+                      child: formattedDocumentSection()),
+                ),
+                // CONDITIONAL NEXT BUTTON SECTION:
+                Padding(
+                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  child: setNextButton(),
+                ),
+              ],
             ),
-            // TITLE of the section:
-            Padding(
-              padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-              child: Text(
-                widget.data.title,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                maxLines: 5,
-                style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
-                textScaleFactor: 3.0,
-              ),
-            ),
-            // EXPANSION SECTION containing the section text elements:
-            formattedSection,
-            // CONDITIONAL NEXT BUTTON SECTION:
-            Padding(
-              padding: EdgeInsets.fromLTRB(60.0, 0.0, 60.0, 10.0),
-              child: conditionalNextButton,
-            ),
-          ],
+          ),
         ),
         // BOTTOM APP BAR conditionally holds the "back" button:
         bottomNavigationBar: BottomAppBar(
@@ -397,13 +520,15 @@ class _DocSectionState extends State<DocSection> {
             child: Row(children: <Widget>[
               Container(
                 padding: const EdgeInsets.all(12.0),
-                child: conditionalBackButton,
+                child: setBackButton(),
               ) // end container
             ]), // end of Row container
           ),
-          color: Colors.blue[100],
+          color: footerBackgroundColor,
         ), // bottomNavigationBar
       ), // end Scaffold
     ); // end MaterialApp
   }
 }
+
+
