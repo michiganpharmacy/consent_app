@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 import 'dart:convert' show jsonDecode;
+import 'dart:html' as html;
 
 import 'package:consent_app/globals.dart' as globals;
 import 'package:consent_app/style.dart';
@@ -199,9 +200,6 @@ class DocSection extends StatefulWidget {
 // _DocSectionState
 //
 class _DocSectionState extends State<DocSection> {
-
-
-
   // Build method will also rerun every time setState is called:
   @override
   Widget build(BuildContext context) {
@@ -231,8 +229,7 @@ class _DocSectionState extends State<DocSection> {
     /////////////////////////////////////////////////////
     Widget detailTextWidget = Padding(
       padding: EdgeInsets.fromLTRB(52.0, 0.0, 52.0, 20.0),
-      child: MarkdownBody(
-          data: widget.data.detail),
+      child: MarkdownBody(data: widget.data.detail),
     );
 
     ////////////////////////////////////////////////////////////////
@@ -304,7 +301,7 @@ class _DocSectionState extends State<DocSection> {
     userConsents() async {
       String hasConsentedUrl = globals.consent_url;
       if (await canLaunch(hasConsentedUrl)) {
-        await launch(hasConsentedUrl);
+        html.window.open(hasConsentedUrl, "_self");
       } else {
         throw 'Could not launch $hasConsentedUrl';
       }
@@ -319,7 +316,7 @@ class _DocSectionState extends State<DocSection> {
     userDeclines() async {
       String hasDeclinedUrl = globals.decline_url;
       if (await canLaunch(hasDeclinedUrl)) {
-        await launch(hasDeclinedUrl);
+        html.window.open(hasDeclinedUrl, "_self");
       } else {
         throw 'Could not launch $hasDeclinedUrl';
       }
@@ -373,8 +370,7 @@ class _DocSectionState extends State<DocSection> {
               child: ElevatedButton(
                 child: Text(
                   'Next',
-                  style: TextStyle(
-                      ),
+                  style: TextStyle(),
                 ),
                 onPressed: () {
                   Navigator.push(
