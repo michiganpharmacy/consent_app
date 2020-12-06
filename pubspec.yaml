@@ -1,5 +1,5 @@
 name: consent_app
-description: A new Flutter project.
+description: Consent App
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -52,6 +52,7 @@ flutter:
   assets:
       # - assets/hello.md
       - assets/consent.md
+      - assets/managehftm_heart_ondark.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

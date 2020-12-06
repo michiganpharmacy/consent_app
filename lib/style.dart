@@ -11,11 +11,11 @@ ThemeData primaryThemeData = ThemeData(
   primaryColor: primaryColor,
   fontFamily: 'Roboto',
   textTheme: TextTheme(
-    headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.normal),
+    headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.normal, color: primaryColor),
     headline6: TextStyle(fontSize: 22.0, fontWeight: FontWeight.normal, color: paragraphTextColor),
     subtitle1: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal,  color: paragraphTextColor),
-    bodyText1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
-    bodyText2: TextStyle(fontSize: 16.0, fontFamily: 'Roboto'),
+    bodyText1: TextStyle(fontSize: 20.0, fontFamily: 'Roboto', color: paragraphTextColor),
+    bodyText2: TextStyle(fontSize: 20.0, fontFamily: 'Roboto', color: paragraphTextColor),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

@@ -75,12 +75,6 @@ main() {
 //
 ////////////////////////////////////////
 class MyApp extends StatefulWidget {
-  // //final List<Item> data;
-  // final List<DocSection> data;
-  //
-  // // Constructor
-  // MyApp(this.data);
-
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -102,9 +96,6 @@ class _MyAppState extends State<MyApp> {
     List<Item> consentData = await loadAndProcessConsentDocument();
 
     if (consentData.length > 0) {
-      // Load globals:
-      // globals = await loadConfigFile();
-
       // DEBUG:
       print(globals.consent_url);
       print(globals.decline_url);
@@ -153,13 +144,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (this.data.length > 0) {
       return MaterialApp(
-        title: 'Dorsch Lab Consent App',
+        title: 'ManageHF Web',
         home: this.data[0],
         theme: primaryThemeData,
       );
     } else {
       return MaterialApp(
-        title: 'Dorsch Lab Consent App',
+        title: 'ManageHF Web',
         home: Center(
           child: Container(
             width: 50,
@@ -208,17 +199,8 @@ class DocSection extends StatefulWidget {
 // _DocSectionState
 //
 class _DocSectionState extends State<DocSection> {
-  //
-  // Example state stuff, modify to meet your
-  // actual needs:
-  //
-  //int _counter = 0;
-  //
-  //void _incrementCounter() {
-  //  setState(() {
-  //    _counter++;
-  //  });
-  //}
+
+
 
   // Build method will also rerun every time setState is called:
   @override
@@ -236,18 +218,9 @@ class _DocSectionState extends State<DocSection> {
     // widget used to display the summary text
     //
     //////////////////////////////////////////////////
-    // Widget summaryText = RichText(
-    //   textAlign: TextAlign.justify,
-    //   text: TextSpan(children: <TextSpan>[
-    //     // Initial Capital is a little larger than the body of the text:
-    //     TextSpan(text: '${widget.data.summary.substring(0, 1)}', style: Theme.of(context).textTheme.headline6),
-    //     TextSpan(text: '${widget.data.summary.substring(1)}', style: Theme.of(context).textTheme.subtitle1),
-    //   ]),
-    // );
-
     Widget summaryText = Container(
-      child: MarkdownBody(data: widget.data.summary,
-        styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(textScaleFactor: 1.1),
+      child: MarkdownBody(
+        data: widget.data.summary,
       ),
     );
 
@@ -259,7 +232,6 @@ class _DocSectionState extends State<DocSection> {
     Widget detailTextWidget = Padding(
       padding: EdgeInsets.fromLTRB(52.0, 0.0, 52.0, 20.0),
       child: MarkdownBody(
-          styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(textScaleFactor: 1.1),
           data: widget.data.detail),
     );
 
@@ -305,7 +277,10 @@ class _DocSectionState extends State<DocSection> {
         return ElevatedButton(
             child: Row(
               children: [
-                Icon(Icons.arrow_back_ios),
+                Icon(
+                  Icons.arrow_back_ios,
+                  size: 16.0,
+                ),
                 Text('Back'),
               ],
             ),
@@ -360,15 +335,23 @@ class _DocSectionState extends State<DocSection> {
           children: [
             Column(children: <Widget>[
               ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 100.0),
+                constraints: const BoxConstraints(
+                  minWidth: 150.0,
+                  maxWidth: 150.0,
+                  minHeight: 40.0,
+                ),
                 child: ElevatedButton(
                   child: Text('I agree'),
                   onPressed: userConsents,
                 ),
               ),
-              SizedBox(height: 20), // Used as padding
+              SizedBox(height: 30), // Used as padding
               ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 100.0),
+                constraints: const BoxConstraints(
+                  minWidth: 150.0,
+                  maxWidth: 150.0,
+                  minHeight: 40.0,
+                ),
                 child: ElevatedButton(
                   child: Text('I decline'),
                   onPressed: userDeclines,
@@ -382,14 +365,15 @@ class _DocSectionState extends State<DocSection> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 200.0),
+              constraints: const BoxConstraints(
+                minWidth: 200.0,
+                maxWidth: 200.0,
+                minHeight: 40.0,
+              ),
               child: ElevatedButton(
                 child: Text(
                   'Next',
                   style: TextStyle(
-                      // color: Colors.white,
-                      // backgroundColor: primaryColor,
-
                       ),
                 ),
                 onPressed: () {
@@ -409,21 +393,26 @@ class _DocSectionState extends State<DocSection> {
     // ... Here we store a reference to the materialized widget:
     // Widget conditionalNextButton = setNextButton();
 
-    String totalItems = widget.data.runtimeType.toString();
-
     //
     // Now we can easily build out the rest of the layout:
     //
     return MaterialApp(
+      title: "ManageHF Web",
       theme: primaryThemeData,
       home: Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
+          leading: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Image(
+              image: AssetImage('assets/managehftm_heart_ondark.png'),
+            ),
+          ),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Consent (page ${widget.data.index} of ${totalSections})',
+              'Consent (${widget.data.index} of ${totalSections})',
               style: appBarTextStyle,
             ),
           ),
@@ -487,5 +476,3 @@ class _DocSectionState extends State<DocSection> {
     ); // end MaterialApp
   }
 }
-
-
