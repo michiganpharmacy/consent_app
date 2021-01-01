@@ -49,7 +49,7 @@ Research can lead to new discoveries, such as new tests, drugs, or devices. Rese
 Disclaimer & Limitation of Liability: This website is not for diagnosis or treatment of heart failure. You may benefit directly from this study if your drug regimen is improved through use of this website. However, it should not be used in place of the clinical judgment of a healthcare professional. We hope that what we learn will help other people in the future.
 
 Release of Protected Health Information: 
-summary: Agreeing to participate in this study gives the researches your permission to obtain, use, and share information about you for this study, and is required for your to take part in this study. 
+summary: Agreeing to participate in this study gives the researchers your permission to obtain, use, and share information about you for this study, and is required for you to take part in this study. 
 
 Your permission expires at the end of the study, unless you cancel it sooner. 
 
