@@ -25,8 +25,6 @@ import 'src/iconMap.dart'; // Static class with icon lookup by string label
 import 'src/item.dart'; // Item class definition
 import 'src/process_document.dart'; // Function to process the Markdown document
 
-int totalSections = 0;
-
 ///////////////////////////////////////////////////////
 //
 // A place to store global configuration information:
@@ -60,11 +58,12 @@ class ConsentApp extends StatefulWidget {
         super(key: key);
 
   @override
-  _ConsentAppState createState() => _ConsentAppState();
+  ConsentAppState createState() => ConsentAppState();
 }
 
-class _ConsentAppState extends State<ConsentApp> {
+class ConsentAppState extends State<ConsentApp> {
   List data = [];
+  int totalSections = 0;
 
   @override
   void initState() {
@@ -99,7 +98,7 @@ class _ConsentAppState extends State<ConsentApp> {
       List<DocSection> allSections = List<DocSection>(consentData.length);
       totalSections = allSections.length;
       for (int i = 0; i < consentData.length; i++) {
-        allSections[i] = DocSection(data: consentData[i]);
+        allSections[i] = DocSection(data: consentData[i], totalSections: totalSections);
       }
 
       // Add a reference to the "next" section to each section,
@@ -155,10 +154,14 @@ class _ConsentAppState extends State<ConsentApp> {
 //ignore: must_be_immutable
 class DocSection extends StatefulWidget {
   final Item data;
+  final num totalSections;
   DocSection next;
 
   // Constructor
-  DocSection({Key key, this.data}) : super(key: key);
+  DocSection({Key key, @required this.data, @required this.totalSections})
+      : assert(data != null),
+        assert(totalSections != null),
+        super(key: key);
 
   // setNext(nextSection)
   setNext(nextSection) {
@@ -392,7 +395,7 @@ class _DocSectionState extends State<DocSection> {
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Consent (${widget.data.index} of ${totalSections})',
+              'Consent (${widget.data.index} of ${widget.totalSections})',
               style: appBarTextStyle,
             ),
           ),
