@@ -1,9 +1,8 @@
 import 'dart:async' show Future;
 import 'dart:convert' show jsonDecode;
-import 'dart:html' as html;
 
-import 'package:consent_app/globals.dart' as globals;
-import 'package:consent_app/style.dart';
+import 'package:consent_app/src/globals.dart' as globals;
+import 'package:consent_app/src/style.dart';
 import 'package:flutter/material.dart';
 //////////////////////////////////////////////////////////////////////////
 //
@@ -22,9 +21,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart'; // provides markdown support
 import 'package:url_launcher/url_launcher.dart';
 
-import 'iconMap.dart'; // Static class with icon lookup by string label
-import 'item.dart'; // Item class definition
-import 'process_document.dart'; // Function to process the Markdown document
+import 'src/iconMap.dart'; // Static class with icon lookup by string label
+import 'src/item.dart'; // Item class definition
+import 'src/process_document.dart'; // Function to process the Markdown document
 
 ///////////////////////////////////////////
 //
@@ -67,7 +66,7 @@ Future<List<Item>> loadAndProcessConsentDocument() async {
 ////////////////////////////////////
 main() {
   // Now we are good to run the app:
-  runApp(MyApp());
+  runApp(ConsentApp());
 }
 
 ////////////////////////////////////////
@@ -75,12 +74,12 @@ main() {
 // MyApp
 //
 ////////////////////////////////////////
-class MyApp extends StatefulWidget {
+class ConsentApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _ConsentAppState createState() => _ConsentAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _ConsentAppState extends State<ConsentApp> {
   List data = [];
 
   @override
@@ -301,7 +300,7 @@ class _DocSectionState extends State<DocSection> {
     userConsents() async {
       String hasConsentedUrl = globals.consent_url;
       if (await canLaunch(hasConsentedUrl)) {
-        html.window.open(hasConsentedUrl, "_self");
+        await launch(hasConsentedUrl);
       } else {
         throw 'Could not launch $hasConsentedUrl';
       }
@@ -316,7 +315,7 @@ class _DocSectionState extends State<DocSection> {
     userDeclines() async {
       String hasDeclinedUrl = globals.decline_url;
       if (await canLaunch(hasDeclinedUrl)) {
-        html.window.open(hasDeclinedUrl, "_self");
+        launch(hasDeclinedUrl);
       } else {
         throw 'Could not launch $hasDeclinedUrl';
       }

@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 // This is from the Flutter demo app
 // and is not being used currently.
-import 'package:consent_app/main.dart';
+import 'package:consent_app/consent_app.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
