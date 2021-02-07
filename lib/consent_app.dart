@@ -1,9 +1,9 @@
 import 'dart:async' show Future;
-import 'dart:convert' show jsonDecode;
 
 import 'package:consent_app/src/globals.dart' as globals;
 import 'package:consent_app/src/style.dart';
 import 'package:flutter/material.dart';
+
 //////////////////////////////////////////////////////////////////////////
 //
 // consent app
@@ -25,16 +25,6 @@ import 'src/iconMap.dart'; // Static class with icon lookup by string label
 import 'src/item.dart'; // Item class definition
 import 'src/process_document.dart'; // Function to process the Markdown document
 
-///////////////////////////////////////////
-//
-// loadConfigFile
-//
-///////////////////////////////////////////
-Future<Map> loadConfigFile() async {
-  String configuration = await rootBundle.loadString('assets/config.json');
-  return jsonDecode(configuration);
-}
-
 int totalSections = 0;
 
 ///////////////////////////////////////////////////////
@@ -49,24 +39,12 @@ int totalSections = 0;
 // loadAndProcessConsentDocument()
 //
 //////////////////////////////////////////
-Future<List<Item>> loadAndProcessConsentDocument() async {
-  //final consentDocument = 'hello.md';
-  final consentDocument = 'consent.md';
-  //print("==> loadConsentDocAsset():1: calling rootBundle.loadString");
-  final data = await rootBundle.loadString('assets/$consentDocument');
+Future<List<Item>> loadAndProcessConsentDocument(
+    String pathToConsentDocument) async {
+  final data = await rootBundle.loadString(pathToConsentDocument);
   //print("==> loadConsentDocAsset():2: got data from rootBundle");
   //print('DATA SAMPLE: ${data.substring(0,50)}');
   return processDocument(data);
-}
-
-////////////////////////////////////
-//
-// main()
-//
-////////////////////////////////////
-main() {
-  // Now we are good to run the app:
-  runApp(ConsentApp());
 }
 
 ////////////////////////////////////////
@@ -75,6 +53,12 @@ main() {
 //
 ////////////////////////////////////////
 class ConsentApp extends StatefulWidget {
+  final String pathToConsentDocument;
+
+  const ConsentApp({Key key, @required this.pathToConsentDocument})
+      : assert(pathToConsentDocument != null),
+        super(key: key);
+
   @override
   _ConsentAppState createState() => _ConsentAppState();
 }
@@ -93,7 +77,8 @@ class _ConsentAppState extends State<ConsentApp> {
     WidgetsFlutterBinding.ensureInitialized();
     // Asynchronously load the consent document
     // and parse it into sections:
-    List<Item> consentData = await loadAndProcessConsentDocument();
+    List<Item> consentData =
+        await loadAndProcessConsentDocument(widget.pathToConsentDocument);
 
     if (consentData.length > 0) {
       // DEBUG:
@@ -413,41 +398,50 @@ class _DocSectionState extends State<DocSection> {
           ),
         ),
         body: Container(
-          padding: EdgeInsets.only(top: 0.0, bottom: 0.0, left: 25.0, right: 25.0),
+          padding:
+              EdgeInsets.only(top: 0.0, bottom: 0.0, left: 25.0, right: 25.0),
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 // ICON:
                 Padding(
-                  padding: EdgeInsets.only(top: 50.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  padding: EdgeInsets.only(
+                      top: 50.0, bottom: 50.0, left: 0.0, right: 0.0),
                   // Icon is chosen based on the section title:
-                  child: Icon(IconMap.lookup(widget.data.title), size: 48, color: primaryColor),
+                  child: Icon(IconMap.lookup(widget.data.title),
+                      size: 48, color: primaryColor),
                 ),
                 // TITLE of the section:
                 Padding(
-                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  padding: EdgeInsets.only(
+                      top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
+                    constraints:
+                        const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
                     child: Text(
                       widget.data.title,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.fade,
                       maxLines: 5,
-                      style: TextStyle(fontWeight: FontWeight.normal, color: primaryColor),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal, color: primaryColor),
                       textScaleFactor: 2.0,
                     ),
                   ),
                 ),
                 // EXPANSION SECTION containing the section text elements:
                 Padding(
-                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  padding: EdgeInsets.only(
+                      top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
                   child: ConstrainedBox(
-                      constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
+                      constraints: const BoxConstraints(
+                          minWidth: 100.0, maxWidth: 600.0),
                       child: formattedDocumentSection()),
                 ),
                 // CONDITIONAL NEXT BUTTON SECTION:
                 Padding(
-                  padding: EdgeInsets.only(top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
+                  padding: EdgeInsets.only(
+                      top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
                   child: setNextButton(),
                 ),
               ],

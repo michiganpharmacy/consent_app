@@ -1,11 +1,3 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // This is from the Flutter demo app
@@ -13,12 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:consent_app/consent_app.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Consent smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    //await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(ConsentApp(pathToConsentDocument: "assets/consent.md"));
+    await tester.pump(Duration(seconds: 1));
 
-    // Verify that our counter starts at 0.
-    //expect(find.text('0'), findsOneWidget);
+    // Verify that our consent screen starts at 1.
+    expect(find.text('Consent (1 of 10)'), findsOneWidget);
     //expect(find.text('1'), findsNothing);
 
     // Tap the '+' icon and trigger a frame.
