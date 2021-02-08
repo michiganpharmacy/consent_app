@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,11 +29,13 @@ void main() {
   testWidgets("Next page test", (WidgetTester tester) async {
     final key = GlobalKey<ConsentAppState>();
     await tester.pumpWidget(ConsentApp(key: key, pathToConsentDocument: "assets/consent.md"));
-    await tester.pump(Duration(seconds: 1));
+    await tester.pumpAndSettle();
 
     // Tap the next button;
-    await tester.tap(find.text("Next"));
-    await tester.pump(Duration(seconds: 1));
+    expect(find.byKey(Key("_ElevatedButtonKey")), findsOneWidget);
+    final ElevatedButton button = find.byKey(Key("_ElevatedButtonKey")).evaluate().first.widget;
+    button.onPressed();
+    await tester.pumpAndSettle();
     expect(find.text('Consent (2 of ${key.currentState.totalSections})'), findsOneWidget);
   });
 }

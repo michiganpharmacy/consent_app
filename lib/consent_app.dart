@@ -355,6 +355,7 @@ class _DocSectionState extends State<DocSection> {
                 minHeight: 40.0,
               ),
               child: ElevatedButton(
+                key: Key("_ElevatedButtonKey"),
                 child: Text(
                   'Next',
                   style: TextStyle(),
