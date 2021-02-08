@@ -1,6 +1,5 @@
 import 'dart:async' show Future;
 
-import 'package:consent_app/src/globals.dart' as globals;
 import 'package:consent_app/src/style.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,6 @@ import 'package:flutter/material.dart';
 //////////////////////////////////////////////////////////////////////////
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart'; // provides markdown support
-import 'package:url_launcher/url_launcher.dart';
 
 import 'src/globals.dart';
 import 'src/iconMap.dart'; // Static class with icon lookup by string label
@@ -82,9 +80,6 @@ class ConsentAppState extends State<ConsentApp> {
         await loadAndProcessConsentDocument(widget.pathToConsentDocument);
 
     if (consentData.length > 0) {
-      // DEBUG:
-      print(globals.decline_url);
-
       // DEBUG: print sections:
       for (int i = 0; i < consentData.length; i++) {
         print('\n===== SECTION ${consentData[i].index} =====');
@@ -96,10 +91,10 @@ class ConsentAppState extends State<ConsentApp> {
 
       // All document sections (i.e., Flutter route pages) are
       // created in advance:
-      List<DocSection> allSections = List<DocSection>(consentData.length);
-      totalSections = allSections.length;
-      for (int i = 0; i < consentData.length; i++) {
-        allSections[i] = DocSection(data: consentData[i], totalSections: totalSections);
+      final allSections = <DocSection>[];
+      totalSections = consentData.length;
+      for (var item in consentData) {
+        allSections.add(DocSection(data: item, totalSections: totalSections));
       }
 
       // Add a reference to the "next" section to each section,
@@ -302,12 +297,7 @@ class _DocSectionState extends State<DocSection> {
     //
     ////////////////////////////////////////
     userDeclines() async {
-      String hasDeclinedUrl = globals.decline_url;
-      if (await canLaunch(hasDeclinedUrl)) {
-        launch(hasDeclinedUrl);
-      } else {
-        throw 'Could not launch $hasDeclinedUrl';
-      }
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
 
     //
@@ -339,6 +329,7 @@ class _DocSectionState extends State<DocSection> {
                   minHeight: 40.0,
                 ),
                 child: ElevatedButton(
+                  key: declineButtonKey,
                   child: Text('I decline'),
                   onPressed: userDeclines,
                 ),
