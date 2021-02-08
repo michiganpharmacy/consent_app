@@ -24,4 +24,15 @@ void main() {
     //expect(find.text('0'), findsNothing);
     //expect(find.text('1'), findsOneWidget);
   });
+
+  testWidgets("Next page test", (WidgetTester tester) async {
+    final key = GlobalKey<ConsentAppState>();
+    await tester.pumpWidget(ConsentApp(key: key, pathToConsentDocument: "assets/consent.md"));
+    await tester.pump(Duration(seconds: 1));
+
+    // Tap the next button;
+    await tester.tap(find.text("Next"));
+    await tester.pump(Duration(seconds: 1));
+    expect(find.text('Consent (2 of ${key.currentState.totalSections})'), findsOneWidget);
+  });
 }
