@@ -21,6 +21,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart'; // provides markdown support
 import 'package:url_launcher/url_launcher.dart';
 
+import 'src/globals.dart';
 import 'src/iconMap.dart'; // Static class with icon lookup by string label
 import 'src/item.dart'; // Item class definition
 import 'src/process_document.dart'; // Function to process the Markdown document
@@ -52,9 +53,10 @@ Future<List<Item>> loadAndProcessConsentDocument(
 ////////////////////////////////////////
 class ConsentApp extends StatefulWidget {
   final String pathToConsentDocument;
+  final Widget child;
 
-  const ConsentApp({Key key, @required this.pathToConsentDocument})
-      : assert(pathToConsentDocument != null),
+  const ConsentApp({Key key, @required this.pathToConsentDocument, @required this.child})
+      : assert(pathToConsentDocument != null), assert(child != null) ,
         super(key: key);
 
   @override
@@ -81,7 +83,6 @@ class ConsentAppState extends State<ConsentApp> {
 
     if (consentData.length > 0) {
       // DEBUG:
-      print(globals.consent_url);
       print(globals.decline_url);
 
       // DEBUG: print sections:
@@ -116,7 +117,7 @@ class ConsentAppState extends State<ConsentApp> {
       // consent agreement page or to another route representing
       // the beginning of the main functional part of your app:
       //
-      allSections[allSections.length - 1].setNext(allSections[0]);
+      allSections[allSections.length - 1].setNext(widget.child);
 
       setState(() {
         this.data = allSections;
@@ -155,7 +156,7 @@ class ConsentAppState extends State<ConsentApp> {
 class DocSection extends StatefulWidget {
   final Item data;
   final num totalSections;
-  DocSection next;
+  Widget next;
 
   // Constructor
   DocSection({Key key, @required this.data, @required this.totalSections})
@@ -259,6 +260,7 @@ class _DocSectionState extends State<DocSection> {
     Widget setBackButton() {
       if (Navigator.canPop(context)) {
         return ElevatedButton(
+          key: backButtonKey,
             child: Row(
               children: [
                 Icon(
@@ -286,12 +288,11 @@ class _DocSectionState extends State<DocSection> {
     //
     /////////////////////////////
     userConsents() async {
-      String hasConsentedUrl = globals.consent_url;
-      if (await canLaunch(hasConsentedUrl)) {
-        await launch(hasConsentedUrl);
-      } else {
-        throw 'Could not launch $hasConsentedUrl';
-      }
+      Navigator.push(
+        context,
+        // getNext() returns the next page route:
+        MaterialPageRoute(builder: (context) => widget.getNext()),
+      );
     }
 
     ////////////////////////////////////////
@@ -325,6 +326,7 @@ class _DocSectionState extends State<DocSection> {
                   minHeight: 40.0,
                 ),
                 child: ElevatedButton(
+                  key: consentsButtonKey,
                   child: Text('I agree'),
                   onPressed: userConsents,
                 ),
@@ -355,7 +357,7 @@ class _DocSectionState extends State<DocSection> {
                 minHeight: 40.0,
               ),
               child: ElevatedButton(
-                key: Key("_ElevatedButtonKey"),
+                key: nextButtonKey,
                 child: Text(
                   'Next',
                   style: TextStyle(),
