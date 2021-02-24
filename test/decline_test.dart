@@ -8,10 +8,12 @@ import 'utils.dart';
 void main() {
   testWidgets("Decline test", (WidgetTester tester) async {
     final key = GlobalKey<ConsentAppState>();
-    await tester.pumpWidget(ConsentApp(
-        key: key,
-        pathToConsentDocument: "assets/consent.md",
-        child: Text("Hello World")));
+    await tester.pumpWidget(MaterialApp(
+      home: ConsentApp(
+          key: key,
+          pathToConsentDocument: "assets/consent.md",
+          onAccept: () => Text("Hello World")),
+    ));
     await tester.pumpAndSettle();
 
     await goToAuthorizePage(tester, key);
