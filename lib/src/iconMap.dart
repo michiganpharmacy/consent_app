@@ -29,13 +29,12 @@ class IconMap{
   //
   // lookup
   //
-  static IconData lookup(label){
-    if(_iconMap.containsKey(label)){
+  static IconData? lookup(label) {
+    if (_iconMap.containsKey(label)) {
       return _iconMap[label];
-    }else{
+    } else {
       return _iconMap['default'];
     }
   }
-
 }
 

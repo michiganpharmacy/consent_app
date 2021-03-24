@@ -24,8 +24,8 @@ void main() {
 
     expect(find.byKey(consentsButtonKey), findsOneWidget);
     final ElevatedButton button =
-        find.byKey(consentsButtonKey).evaluate().first.widget;
-    button.onPressed();
+        find.byKey(consentsButtonKey).evaluate().first.widget as ElevatedButton;
+    button.onPressed!();
     await tester.pumpAndSettle();
     expect(text, 'Hello World');
   });

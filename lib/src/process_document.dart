@@ -1,19 +1,20 @@
-import 'item.dart';
 import 'dart:convert';
+
+import 'item.dart';
 
 ////////////////////////
 //
 // processDocument
 //
 ////////////////////////
-List<Item> processDocument(document){
+List<Item> processDocument(document) {
+  LineSplitter ls = LineSplitter(); // Initialize a line splitter  ...
+  List<String> lines =
+      ls.convert(document); // ... to split doc into lines for special parsing
+  List<Item> sections = []; // Container to hold the converted data
+  Item? accumulator = new Item(); // Single Item to accumulate across lines
 
-  LineSplitter ls     = LineSplitter();       // Initialize a line splitter  ...
-  List<String> lines  = ls.convert(document); // ... to split doc into lines for special parsing
-  List<Item> sections = List<Item>();         // Container to hold the converted data
-  Item accumulator    = new Item();           // Single Item to accumulate across lines
-
-  // "singleton" sgPattern matches some word or words with no embedded colons 
+  // "singleton" sgPattern matches some word or words with no embedded colons
   // but that is terminated by a single colon. This detects headers with
   // presumably nested stuff following on subsequent lines:
   RegExp sgPattern = new RegExp(r'^([^\:]+\w)\s*:\s*$');
@@ -21,7 +22,7 @@ List<Item> processDocument(document){
   // kvPattern matches some word or words followed by a colon and then some
   // word or words (which could also end in a colon, since that can occur).
   // This detects a "key" followed by a colon, then a "value" (where the
-  // value is allowed to have a terminating colon):          
+  // value is allowed to have a terminating colon):
   RegExp kvPattern = new RegExp(r'^\s*(.+\w)\s*:\s*(.+:?)$');
   RegExp httpPattern = new RegExp(r'http://');  
   RegExp summaryPattern = new RegExp(r'^\s*(summary)\s*:\s*(.+:?)$'); 
@@ -105,51 +106,53 @@ List<Item> processDocument(document){
       if(processingDetail){
         // Processing detail section is the most complicated, because
         // we allow multiple paragraphs and unordered lists:
-        if( line.isEmpty){
+        if( line.isEmpty) {
           // Just add (up to two) newlines (to indicate to the markdown processor
           // the end of a paragraph) and we're done:
-          if(accumulator.detail.endsWith('\n')){
-            accumulator.detail += '\n';
-          }else{
-            accumulator.detail += '\n\n';
+          if (accumulator.detail?.endsWith('\n') == true) {
+            accumulator.detail = "${accumulator.detail}" + '\n';
+          } else {
+            accumulator.detail = "${accumulator.detail}" + '\n\n';
           }
-        }else{
+        } else{
           // Not empty:
-          if(unorderedListPattern.hasMatch(line)){
+          if(unorderedListPattern.hasMatch(line)) {
             // Unordered list:
-            if(!accumulator.detail.endsWith('\n')){
-              accumulator.detail += '\n';
+            if (accumulator.detail?.endsWith('\n') != true) {
+              accumulator.detail = "${accumulator.detail}" + '\n';
             }
-            Iterable<RegExpMatch> ulMatches = unorderedListPattern.allMatches(line);
-            var ulMatch = ulMatches.elementAt(0); // => extract the first (and only) match
-            accumulator.detail += '- ';           // => Markdown unordered list tag
-            accumulator.detail += ulMatch.group(1);
-          }else{
+            Iterable<RegExpMatch> ulMatches =
+                unorderedListPattern.allMatches(line);
+            var ulMatch =
+                ulMatches.elementAt(0); // => extract the first (and only) match
+            accumulator.detail = "${accumulator.detail}" +
+                '- '; // => Markdown unordered list tag
+            accumulator.detail =
+                "${accumulator.detail}" + (ulMatch.group(1) ?? "");
+          } else {
             // Continuation line from a paragraph
             // or possibly a new paragraph
-            if( ! accumulator.detail.endsWith(' ')
-                && ! accumulator.detail.endsWith('\n')
-                && line.isNotEmpty
-                && line[0] != ' ' 
-            ){
+            if (accumulator.detail?.endsWith(' ') == true &&
+                accumulator.detail?.endsWith('\n') == true &&
+                line.isNotEmpty &&
+                line[0] != ' ') {
               // add space so words don't get smushed:
-              accumulator.detail += ' ';
+              accumulator.detail = "${accumulator.detail}" + ' ';
             }
-            accumulator.detail += line;
+            accumulator.detail = "${accumulator.detail}" + line;
           }
         } 
         //
-      }else{
+      }else {
         // Get here if we are processing summary lines:
         // add a new line if needed before appending line:
-        if( accumulator.summary.isNotEmpty 
-            && ! accumulator.summary.endsWith(' ')
-            && line.isNotEmpty
-            && line[0] != ' '
-        ){
-            accumulator.summary += "\\\n\\\n";
+        if (accumulator.summary?.isNotEmpty == true &&
+            accumulator.summary?.endsWith(' ') == true &&
+            line.isNotEmpty &&
+            line[0] != ' ') {
+          accumulator.summary = "${accumulator.summary}" + "\\\n\\\n";
         }
-        accumulator.summary += line;
+        accumulator.summary = "${accumulator.summary}" + line;
       }
     }
   }

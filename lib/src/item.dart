@@ -5,29 +5,28 @@
 //
 class Item {
   Item({
-    this.title    = '',
-    this.summary  = '',
-    this.detail   = '',
+    this.title = '',
+    this.summary = '',
+    this.detail = '',
     this.expanded = false,
-    this.index    = 0,
+    this.index = 0,
     this.iconName = '',
   });
 
-  String   title;
-  String   summary;
-  String   detail;
-  bool     expanded;
-  int      index;
-  String   iconName;
-  
+  String? title;
+  String? summary;
+  String? detail;
+  bool? expanded;
+  int? index;
+  String? iconName;
 
-  reset(){
-    this.title      = '';
-    this.summary    = '';
-    this.detail     = '';
+  reset() {
+    this.title = '';
+    this.summary = '';
+    this.detail = '';
     this.expanded = false;
-    this.index      = 0;
-    this.iconName   = '';
+    this.index = 0;
+    this.iconName = '';
   }
 
   // 

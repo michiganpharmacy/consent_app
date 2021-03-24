@@ -18,7 +18,7 @@ void main() {
     await tester.pumpAndSettle(Duration(seconds: 1));
 
     // Verify that our consent screen starts at 1 of {totalSections}.
-    expect(find.text('Consent (1 of ${key.currentState.totalSections})'),
+    expect(find.text('Consent (1 of ${key.currentState?.totalSections})'),
         findsOneWidget);
   });
 }

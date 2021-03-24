@@ -2,7 +2,6 @@ import 'dart:async' show Future;
 
 import 'package:consent_app/src/style.dart';
 import 'package:flutter/material.dart';
-
 //////////////////////////////////////////////////////////////////////////
 //
 // consent app
@@ -44,8 +43,8 @@ Future<List<Item>> loadAndProcessConsentDocument(
   return processDocument(data);
 }
 
-String _pathToConsentDocument;
-VoidCallback _onAccept;
+late String _pathToConsentDocument;
+late VoidCallback _onAccept;
 
 ////////////////////////////////////////
 //
@@ -56,10 +55,7 @@ class ConsentApp extends StatefulWidget {
   final String pathToConsentDocument;
   final VoidCallback onAccept;
 
-  ConsentApp(
-      {Key key,
-       String pathToConsentDocument,
-      VoidCallback onAccept})
+  ConsentApp({Key? key, String? pathToConsentDocument, VoidCallback? onAccept})
       : assert(pathToConsentDocument != null || _pathToConsentDocument != null),
         assert(onAccept != null || _onAccept != null),
         this.pathToConsentDocument =
@@ -71,8 +67,7 @@ class ConsentApp extends StatefulWidget {
   ConsentAppState createState() => ConsentAppState();
 
   static initialize(
-      {@required String pathToConsentDocument,
-      @required VoidCallback onAccept}) {
+      {required String pathToConsentDocument, required VoidCallback onAccept}) {
     _pathToConsentDocument = pathToConsentDocument;
     _onAccept = onAccept;
   }
@@ -235,9 +230,7 @@ class DocSection extends StatefulWidget {
   final Item data;
 
   // Constructor
-  DocSection({Key key, @required this.data})
-      : assert(data != null),
-        super(key: key);
+  DocSection({Key? key, required this.data}) : super(key: key);
 
   // The following is left over from the flutter example code:
   @override
@@ -272,7 +265,7 @@ class _DocSectionState extends State<DocSection> {
                 constraints:
                     const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
                 child: Text(
-                  widget.data.title,
+                  widget.data.title ?? "",
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.fade,
                   maxLines: 5,
@@ -327,7 +320,7 @@ class _DocSectionState extends State<DocSection> {
     //////////////////////////////////////////////////
     Widget summaryText = Container(
       child: MarkdownBody(
-        data: widget.data.summary,
+        data: widget.data.summary ?? "",
       ),
     );
 
@@ -338,9 +331,9 @@ class _DocSectionState extends State<DocSection> {
     /////////////////////////////////////////////////////
     Widget detailTextWidget = Padding(
       padding: EdgeInsets.fromLTRB(52.0, 0.0, 52.0, 20.0),
-      child: MarkdownBody(data: widget.data.detail),
+      child: MarkdownBody(data: widget.data.detail ?? ""),
     );
-    if (widget.data.detail.isEmpty) {
+    if (widget.data.detail?.isEmpty == true) {
       return summaryText;
     } else {
       return ExpansionTile(
@@ -367,7 +360,7 @@ class _DocSectionState extends State<DocSection> {
   /////////////////////////////
   userConsents() async {
     final state = context.findAncestorStateOfType<ConsentAppState>();
-    state.onAccept();
+    state?.onAccept();
   }
 
   ////////////////////////////////////////
@@ -378,7 +371,7 @@ class _DocSectionState extends State<DocSection> {
   ////////////////////////////////////////
   userDeclines() async {
     final state = context.findAncestorStateOfType<ConsentAppState>();
-    state.onDecline();
+    state?.onDecline();
   }
 
   //
@@ -437,7 +430,7 @@ class _DocSectionState extends State<DocSection> {
               onPressed: () {
                 final state =
                     context.findAncestorStateOfType<ConsentAppState>();
-                state.onNext();
+                state?.onNext();
               },
             ),
           ),

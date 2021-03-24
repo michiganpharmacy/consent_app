@@ -17,21 +17,21 @@ Future<GlobalKey<ConsentAppState>> nextPageTest(WidgetTester tester) async {
   // Tap the next button;
   expect(find.byKey(nextButtonKey), findsOneWidget);
   final ElevatedButton button =
-      find.byKey(nextButtonKey).evaluate().first.widget;
-  button.onPressed();
+      find.byKey(nextButtonKey).evaluate().first.widget as ElevatedButton;
+  button.onPressed!();
   await tester.pumpAndSettle();
-  expect(find.text('Consent (2 of ${key.currentState.totalSections})'),
+  expect(find.text('Consent (2 of ${key.currentState?.totalSections})'),
       findsOneWidget);
   return key;
 }
 
 Future<void> goToAuthorizePage(
     WidgetTester tester, GlobalKey<ConsentAppState> key) async {
-  for (int i = 0; i < key.currentState.totalSections - 1; i++) {
+  for (int i = 0; i < key.currentState!.totalSections - 1; i++) {
     expect(find.byKey(nextButtonKey), findsOneWidget);
     final ElevatedButton button =
-        find.byKey(nextButtonKey).evaluate().first.widget;
-    button.onPressed();
+        find.byKey(nextButtonKey).evaluate().first.widget as ElevatedButton;
+    button.onPressed!();
     await tester.pumpAndSettle();
   }
 }

@@ -20,10 +20,10 @@ void main() {
 
     expect(find.byKey(declineButtonKey), findsOneWidget);
     final ElevatedButton button =
-        find.byKey(declineButtonKey).evaluate().first.widget;
-    button.onPressed();
+        find.byKey(declineButtonKey).evaluate().first.widget as ElevatedButton;
+    button.onPressed!();
     await tester.pumpAndSettle();
-    expect(find.text('Consent (1 of ${key.currentState.totalSections})'),
+    expect(find.text('Consent (1 of ${key.currentState?.totalSections})'),
         findsOneWidget);
   });
 }
